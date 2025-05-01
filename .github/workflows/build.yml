@@ -185,7 +185,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: |
-          $ivyDir =  ${{ github.event.inputs.target_folder }}/ivy/jars
+          ${{ github.event.inputs.target_folder }}/ivy/jars
         key: ${{ runner.os }}-ivy-${{ hashFiles('**/*.jar') }}
         restore-keys: |
           ${{ runner.os }}-ivy-
