@@ -320,7 +320,7 @@ jobs:
           // Append the file URL to the release description
           releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
           releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
-          releaseDescription += `\n\nThis environment was built with following workflow settings: `;
+          releaseDescription += `\n\nThis environment was built with the following workflow settings: `;
           releaseDescription += `\ndownload_jars: ${{ github.event.inputs.download_jars }}`;
           releaseDescription += `\nsparknlp_version: ${{ github.event.inputs.sparknlp_version }}`;
           releaseDescription += `\nsparknlp_gpu: ${{ github.event.inputs.sparknlp_gpu }}`;
