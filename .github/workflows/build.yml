@@ -251,7 +251,12 @@ jobs:
           Write-Output ".\post_build.ps1 doesn't exist. Skip executing it."
         }
 
-        
+    - name: check final environment settings
+      run: |
+        conda activate ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}
+        mkdir -p zipped
+        conda env export > zipped/detailed_environment.yml
+        cat zipped/detailed_environment.yml
  
 
     - name: Check for 7-Zip installation
@@ -320,6 +325,12 @@ jobs:
           // Append the file URL to the release description
           releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
           releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
+          releaseDescription += `\n\nThis environment was built with the following workflow settings: `;
+          releaseDescription += `\ndownload_jars: ${{ github.event.inputs.download_jars }}`;
+          releaseDescription += `\nsparknlp_version: ${{ github.event.inputs.sparknlp_version }}`;
+          releaseDescription += `\nsparknlp_gpu: ${{ github.event.inputs.sparknlp_gpu }}`;
+          releaseDescription += `\ndownload_spacy_model: ${{ github.event.inputs.download_spacy_model }}`;
+          releaseDescription += `\nzip_jar_only: ${{ github.event.inputs.zip_jar_only }}`;          
 
           // Update the release with the description
           await github.repos.updateRelease({
