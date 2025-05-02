@@ -76,6 +76,7 @@ dependencies:
     - openpyxl    
     - optimum
     - pandas
+    - plotly
     - preshed
     - protobuf
     - py4j
