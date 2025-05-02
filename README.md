@@ -13,7 +13,7 @@ A GitHub Actions workflow to create zipped Conda environments for Windows machin
 - Compresses environments into 7z archives for easy uploading
 - Creates GitHub releases with built environments
 
-## Usage
+## How to
 
 1. Place your environment.yml file in a subfolder (e.g., win_dev, win_pip) or make a new folder
 2. Trigger the workflow manually through GitHub Actions
