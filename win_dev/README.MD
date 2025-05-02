@@ -1,1 +1,1 @@
-This is demo conda environment
+This is a tested conda env worked in VINCI dev environment
