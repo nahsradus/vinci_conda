@@ -251,7 +251,12 @@ jobs:
           Write-Output ".\post_build.ps1 doesn't exist. Skip executing it."
         }
 
-        
+    - name: check final environment settings
+      run: |
+        conda activate ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}
+        mkdir -p zipped
+        conda env export > zipped/detailed_environment.yml
+        cat zipped/detailed_environment.yml
  
 
     - name: Check for 7-Zip installation
