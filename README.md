@@ -34,7 +34,7 @@ In most recent version of jupyter, you might also need to change these files als
 ## Available Environments
 
 - `win_dev`: Basic Python development environment with Jupyter
-- `win_pip`: Python environment with pytest support
+p- `test_env`: A Python environment for demonstration.
 
 ## Installation
 
