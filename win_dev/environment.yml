@@ -69,6 +69,7 @@ dependencies:
     - loguru
     - lxml    
     - markdown
+    - matplotlib
     - mlflow
     - multiprocess
     - murmurhash      
@@ -100,7 +101,6 @@ dependencies:
     - ninja
     - pyyaml
     - requests
-    - dspy-ai
     - langchain
     - langchain-core
     - langchain-community
