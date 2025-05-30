@@ -76,6 +76,7 @@ dependencies:
     - oauthlib
     - openpyxl    
     - optimum
+    - optuna
     - pandas
     - plotly
     - preshed
