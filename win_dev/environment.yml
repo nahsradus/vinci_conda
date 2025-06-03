@@ -23,6 +23,7 @@ dependencies:
   - pip:
     - medspacy
     - git+https://github.com/medspacy/medspacy_io.git
+    - anywidget
     - beautifulsoup4
     - bioc
     - simpletransformers
