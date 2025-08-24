@@ -1,0 +1,1 @@
+This folder contains environment.yml. Use action to build a conda environment using windows runner Zip the environment folder in multiple files and Upload as artifacts and releases. This environment is meant to be used on windows GPU machine.
