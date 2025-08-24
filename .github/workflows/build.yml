@@ -83,6 +83,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         set -e
+        set -x
         FOLDER="${{ github.event.inputs.build_folder }}"
         VERSION_FILE="${FOLDER}/_version.py"
         VERSION="0.1.0"
