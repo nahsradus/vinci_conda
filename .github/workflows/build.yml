@@ -82,6 +82,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        set -e
         FOLDER="${{ github.event.inputs.build_folder }}"
         VERSION_FILE="${FOLDER}/_version.py"
         VERSION="0.1.0"
@@ -103,11 +104,26 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           BRANCH_NAME="bump-version-${FOLDER}-${VERSION}-$(date +%s)"
-          git checkout -b "$BRANCH_NAME"
+          if git show-ref --verify --quiet refs/heads/$BRANCH_NAME; then
+            echo "Branch $BRANCH_NAME already exists, checking it out."
+            git checkout $BRANCH_NAME
+          else
+            git checkout -b "$BRANCH_NAME"
+          fi
           git add "$VERSION_FILE"
-          git commit -m "Bump version for release $RELEASE_NAME"
-          git push origin "$BRANCH_NAME"
-          gh pr create --title "Bump version for $RELEASE_NAME" --body "Auto bump version for release $RELEASE_NAME" --base main --head "$BRANCH_NAME"
+          if git diff --cached --quiet; then
+            echo "No changes to commit for $VERSION_FILE."
+          else
+            git commit -m "Bump version for release $RELEASE_NAME"
+            git push origin "$BRANCH_NAME"
+          fi
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number')
+          if [ -z "$EXISTING_PR" ]; then
+            gh pr create --title "Bump version for $RELEASE_NAME" --body "Auto bump version for release $RELEASE_NAME" --base main --head "$BRANCH_NAME"
+          else
+            echo "PR for branch $BRANCH_NAME already exists: #$EXISTING_PR"
+          fi
         fi
         echo "name=$RELEASE_NAME" >> $GITHUB_OUTPUT
   
