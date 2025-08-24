@@ -100,9 +100,12 @@ jobs:
           echo "__version__ = \"$VERSION\"" > "$VERSION_FILE"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+          BRANCH_NAME="bump-version-${FOLDER}-${VERSION}-$(date +%s)"
+          git checkout -b "$BRANCH_NAME"
           git add "$VERSION_FILE"
           git commit -m "Bump version for release $RELEASE_NAME"
-          git push
+          git push origin "$BRANCH_NAME"
+          gh pr create --title "Bump version for $RELEASE_NAME" --body "Auto bump version for release $RELEASE_NAME" --base main --head "$BRANCH_NAME"
         fi
         echo "name=$RELEASE_NAME" >> $GITHUB_OUTPUT
   
