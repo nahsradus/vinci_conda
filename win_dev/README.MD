@@ -1,1 +1,1 @@
-This is a tested conda env worked in VINCI dev environment
+8/23/2025 rebuild to include most recent packages.
