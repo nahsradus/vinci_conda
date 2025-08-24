@@ -84,7 +84,7 @@ jobs:
         VERSION_FILE="${FOLDER}/_version.py"
         VERSION="0.1.0"
         if [ -f "$VERSION_FILE" ]; then
-          VERSION=$(grep -oP '(?<=__version__ = ")([0-9]+\.[0-9]+\.[0-9]+)' "$VERSION_FILE")
+          VERSION=$(grep '__version__' "$VERSION_FILE" | sed -E 's/__version__ = \"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/')
         fi
         RELEASE_NAME="${FOLDER}_${VERSION}"
         # Check if release name exists
