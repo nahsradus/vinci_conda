@@ -56,6 +56,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
         
 jobs:
   create_env:
@@ -79,35 +80,58 @@ jobs:
     - name: Determine tag name
       id: tag
       shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.MY_PAT }}
       run: |
-        BUILD_NUMBER="$(git rev-list --count HEAD)"
-        SHORT_HASH="$(git rev-parse --short=7 HEAD)"
-        if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
-          echo "name=${{ github.event.inputs.build_folder }}-b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
-        else
-          SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
-          echo "name=${{ github.event.inputs.build_folder }}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
+        set -e
+        set -x
+        FOLDER="${{ github.event.inputs.build_folder }}"
+        VERSION_FILE="${FOLDER}/_version.py"
+        VERSION="0.1.0"
+        if [ -f "$VERSION_FILE" ]; then
+          VERSION=$(grep '__version__' "$VERSION_FILE" | sed -E 's/__version__ = \"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/')
         fi
+        RELEASE_NAME="${FOLDER}_${VERSION}"
+        # Check if release name exists
+        EXISTING_RELEASE=$(gh release list --limit 100 | grep "^${RELEASE_NAME}" || true)
+        # Always set git user config before any commit
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        if [ ! -z "$EXISTING_RELEASE" ]; then
+          # Bump last digit of version
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+          PATCH=$((PATCH+1))
+          VERSION="$MAJOR.$MINOR.$PATCH"
+          RELEASE_NAME="${FOLDER}_${VERSION}"
+          echo "__version__ = \"$VERSION\"" > "$VERSION_FILE"
+          BRANCH_NAME="bump-version-${FOLDER}-${VERSION}-$(date +%s)"
+          if git show-ref --verify --quiet refs/heads/$BRANCH_NAME; then
+            echo "Branch $BRANCH_NAME already exists, checking it out."
+            git checkout $BRANCH_NAME
+          else
+            git checkout -b "$BRANCH_NAME"
+          fi
+          git add "$VERSION_FILE"
+          if git diff --cached --quiet; then
+            echo "No changes to commit for $VERSION_FILE."
+          else
+            git commit -m "Bump version for release $RELEASE_NAME"
+            git push origin "$BRANCH_NAME"
+          fi
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number')
+          if [ -z "$EXISTING_PR" ]; then
+            gh pr create --title "Bump version for $RELEASE_NAME" --body "Auto bump version for release $RELEASE_NAME" --base main --head "$BRANCH_NAME"
+          else
+            echo "PR for branch $BRANCH_NAME already exists: #$EXISTING_PR"
+          fi
+        fi
+        echo "name=$RELEASE_NAME" >> $GITHUB_OUTPUT
   
-    - name: Debug Permissions
-      run: |
-        echo "Permissions for this GITHUB_TOKEN:"
-        gh auth status
-        gh repo view
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.tag.outputs.name }}
-        release_name: ${{ steps.tag.outputs.name }}
-        draft: false
-        prerelease: false          
-    
+               
+   
     - name: Cache Miniforge Environment
       uses: actions/cache@v4
       with:
@@ -287,6 +311,16 @@ jobs:
         retention-days: ${{ github.event.inputs.retention_days }}
 
 
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.name }}
+        release_name: ${{ steps.tag.outputs.name }}
+        draft: false
+        prerelease: false                
 
     - name: Upload release
       id: upload_release
