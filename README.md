@@ -42,7 +42,7 @@ Use the `build_with_main_commit` workflow in `.github/workflows/direct-bump.yml`
 3. Click "Run workflow" and fill in the required parameters (see below).
 4. The workflow will bump the version and commit directly to your `main` branch, then build and release the environment.
 
-#### If you do NOT have direct commit access to `main` (e.g., in the original repo):
+#### If you do NOT have direct commit access to `main` (e.g., in the VA organizational repo):
 
 Use the standard `build_win_env` workflow in `.github/workflows/build.yml`.
 
