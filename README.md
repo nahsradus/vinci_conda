@@ -49,7 +49,36 @@ Use the standard `build_win_env` workflow in `.github/workflows/build.yml`.
 1. Go to the "Actions" tab in the original repo.
 2. Select the `build_win_env` workflow.
 3. Click "Run workflow" and fill in the required parameters.
-4. The workflow will create a pull request to update the version, then build and release the environment after PR is merged.
+
+
+
+5. Before running the workflow, you must set up a GitHub secret named `MY_PAT` in your repository settings. This should be a Personal Access Token (PAT) with `repo` and `workflow` permissions. The workflow uses this token to create branches, commits, and pull requests.
+
+  ##### How to Create a GitHub Personal Access Token (PAT)
+  1. Go to your GitHub account's token settings:  
+    https://github.com/settings/tokens
+  2. Click **"Generate new token"** (classic) or **"Generate new token"** (fine-grained).
+  3. Give your token a name.
+  4. Select the following scopes:
+    - `repo` (Full control of private repositories)
+    - `workflow` (Update GitHub Action workflows)
+  5. Click **"Generate token"** and copy the token value.  
+    **Note:** You will not be able to see it again after you leave the page.
+
+  Official GitHub documentation:  
+  https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+
+  ##### How to Set the PAT as a Secret in Your Repository
+  1. Go to your repository on GitHub.
+  2. Open the repository secrets page:  
+    `https://github.com/<your-username>/<your-repo>/settings/secrets/actions`  
+    (Replace `<your-username>` and `<your-repo>` with your actual GitHub username and repository name.)
+  3. Click **"New repository secret"**.
+  4. Name the secret `MY_PAT`.
+  5. Paste your Personal Access Token and click **"Add secret"**.
+
+  Official GitHub documentation:  
+  https://docs.github.com/en/actions/security-guides/encrypted-secrets
 
 ### Workflow Parameters
 
