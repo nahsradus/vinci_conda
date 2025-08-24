@@ -79,6 +79,8 @@ jobs:
     - name: Determine tag name
       id: tag
       shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         FOLDER="${{ github.event.inputs.build_folder }}"
         VERSION_FILE="${FOLDER}/_version.py"
