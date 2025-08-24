@@ -129,14 +129,7 @@ jobs:
         fi
         echo "name=$RELEASE_NAME" >> $GITHUB_OUTPUT
   
-    - name: Debug Permissions
-      run: |
-        echo "Permissions for this GITHUB_TOKEN:"
-        gh auth status
-        gh repo view
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                
+               
    
     - name: Cache Miniforge Environment
       uses: actions/cache@v4
