@@ -92,7 +92,10 @@ jobs:
         fi
         RELEASE_NAME="${FOLDER}_${VERSION}"
         # Check if release name exists
-        EXISTING_RELEASE=$(gh release list --limit 100 | grep "^${RELEASE_NAME}")
+        EXISTING_RELEASE=$(gh release list --limit 100 | grep "^${RELEASE_NAME}" || true)
+        # Always set git user config before any commit
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
         if [ ! -z "$EXISTING_RELEASE" ]; then
           # Bump last digit of version
           MAJOR=$(echo $VERSION | cut -d. -f1)
@@ -102,8 +105,6 @@ jobs:
           VERSION="$MAJOR.$MINOR.$PATCH"
           RELEASE_NAME="${FOLDER}_${VERSION}"
           echo "__version__ = \"$VERSION\"" > "$VERSION_FILE"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
           BRANCH_NAME="bump-version-${FOLDER}-${VERSION}-$(date +%s)"
           if git show-ref --verify --quiet refs/heads/$BRANCH_NAME; then
             echo "Branch $BRANCH_NAME already exists, checking it out."
