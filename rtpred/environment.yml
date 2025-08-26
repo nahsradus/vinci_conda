@@ -8,3 +8,6 @@ dependencies:
   - matplotlib
   - seaborn
   - pandas
+  - jupyter
+  - notebook
+  - jupyterlab
