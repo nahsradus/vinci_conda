@@ -13,23 +13,88 @@ A GitHub Actions workflow to create zipped Conda environments for Windows machin
 - Compresses environments into 7z archives for easy uploading
 - Creates GitHub releases with built environments
 
-## How to
 
-1. Place your environment.yml file in a subfolder (e.g., win_dev, win_pip) or make a new folder
-2. Trigger the workflow manually through GitHub Actions
-3. Configure the build parameters:
-   - `build_folder`: Folder containing the environment.yml (e.g., win_dev)
-   - `target_folder`: Destination path for the Conda environment
-   - `download_jars`: Enable Spark NLP jar downloads
-   - `sparknlp_version`: Specify Spark NLP version
-   - `download_spacy_model`: Download Spacy language models
-   - `zip_vol_size`: Control archive volume size
-   - `retention_days`: Artifact retention period
-   
-**Note**: if you don't have a D drive on your VINCI machine, then you might need to make some changes manually once you unzip the environment folder inside VINCI.
-In File Explorer, go to [your_env_folder]\share\jupyter\kernels\python3\kernel.json and open with Notepad++. Change line 3 to  [your_env_folder]\\python.exe, save, and reactivate the environment. The sys.path in jupyter notebooks should now point towards your copy of the anaconda environment. 
+## How to Fork, Set Up, and Run Workflows
 
-In most recent version of jupyter, you might also need to change these files also. Open Notepad++, press Ctrl+Shift+F. Replace string “D:\conda_envs\win_dev” (or different folder name if you build the environment using a different github repo folder) within all the files (including exe files) under “[your_env_folder]\Scripts”  with your [your_env_folder].
+### Forking and Setting Up the Repo
+
+1. On GitHub, click the "Fork" button at the top right of this repository page to create your own copy.
+2. Clone your fork to your local machine:
+  ```bash
+  git clone https://github.com/<your-username>/vinci_conda.git
+  cd vinci_conda
+  ```
+3. (Optional) Set up your upstream remote to keep your fork up to date:
+  ```bash
+  git remote add upstream https://github.com/department-of-veterans-affairs/vinci_conda.git
+  git fetch upstream
+  git merge upstream/main
+  ```
+
+### Running the Workflows
+
+#### If you have direct commit access to `main` (e.g., in your fork):
+
+Use the `build_with_main_commit` workflow in `.github/workflows/direct-bump.yml`.
+
+1. Go to the "Actions" tab in your forked repo.
+2. Select the `build_with_main_commit` workflow (direct bump version).
+3. Click "Run workflow" and fill in the required parameters (see below).
+4. The workflow will bump the version and commit directly to your `main` branch, then build and release the environment.
+
+#### If you do NOT have direct commit access to `main` (e.g., in the VA organizational repo):
+
+Use the standard `build_win_env` workflow in `.github/workflows/build.yml`.
+
+1. Go to the "Actions" tab in the original repo.
+2. Select the `build_win_env` workflow.
+3. Click "Run workflow" and fill in the required parameters.
+
+
+
+5. Before running the workflow, you must set up a GitHub secret named `MY_PAT` in your repository settings. This should be a Personal Access Token (PAT) with `repo` and `workflow` permissions. The workflow uses this token to create branches, commits, and pull requests.
+
+  ##### How to Create a GitHub Personal Access Token (PAT)
+  1. Go to your GitHub account's token settings:  
+    https://github.com/settings/tokens
+  2. Click **"Generate new token"** (classic) or **"Generate new token"** (fine-grained).
+  3. Give your token a name.
+  4. Select the following scopes:
+    - `repo` (Full control of private repositories)
+    - `workflow` (Update GitHub Action workflows)
+  5. Click **"Generate token"** and copy the token value.  
+    **Note:** You will not be able to see it again after you leave the page.
+
+  Official GitHub documentation:  
+  https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+
+  ##### How to Set the PAT as a Secret in Your Repository
+  1. Go to your repository on GitHub.
+  2. Open the repository secrets page:  
+    `https://github.com/<your-username>/<your-repo>/settings/secrets/actions`  
+    (Replace `<your-username>` and `<your-repo>` with your actual GitHub username and repository name.)
+  3. Click **"New repository secret"**.
+  4. Name the secret `MY_PAT`.
+  5. Paste your Personal Access Token and click **"Add secret"**.
+
+  Official GitHub documentation:  
+  https://docs.github.com/en/actions/security-guides/encrypted-secrets
+
+### Workflow Parameters
+
+- `build_folder`: Folder containing the environment.yml (e.g., win_dev)
+- `target_folder`: Destination path for the Conda environment
+- `download_jars`: Enable Spark NLP jar downloads
+- `sparknlp_version`: Specify Spark NLP version
+- `download_spacy_model`: Download Spacy language models
+- `zip_vol_size`: Control archive volume size
+- `retention_days`: Artifact retention period
+
+**Note**: If you don't have a D drive on your VINCI machine, you may need to manually update paths after extracting the environment. See below for details.
+
+In File Explorer, go to `[your_env_folder]\share\jupyter\kernels\python3\kernel.json` and open with Notepad++. Change line 3 to `[your_env_folder]\\python.exe`, save, and reactivate the environment. The sys.path in Jupyter notebooks should now point to your copy of the Anaconda environment.
+
+In recent versions of Jupyter, you may also need to update paths in other files. Use Notepad++ (Ctrl+Shift+F) to replace `D:\conda_envs\win_dev` (or your folder name) in all files under `[your_env_folder]\Scripts` with your `[your_env_folder]`.
 
 ## Available Environments
 

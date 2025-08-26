@@ -23,6 +23,7 @@ dependencies:
   - pip:
     - medspacy
     - git+https://github.com/medspacy/medspacy_io.git
+    - anywidget
     - beautifulsoup4
     - bioc
     - simpletransformers
@@ -76,6 +77,7 @@ dependencies:
     - oauthlib
     - openpyxl    
     - optimum
+    - optuna
     - pandas
     - plotly
     - preshed
